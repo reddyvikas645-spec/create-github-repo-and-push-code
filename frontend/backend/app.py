@@ -228,7 +228,21 @@ def _gemini_json(prompt, schema):
     except HTTPError as error:
         if error.code == 429:
             raise GeminiAPIError("AI search is temporarily rate limited. Please try again shortly.") from error
-        raise GeminiAPIError(f"AI search failed (HTTP {error.code}). Please try again.") from error
+        try:
+            error_body = json.loads(error.read().decode("utf-8"))
+            provider_message = error_body.get("error", {}).get("message", "")
+        except (AttributeError, json.JSONDecodeError, UnicodeDecodeError):
+            provider_message = ""
+        if api_key and isinstance(provider_message, str):
+            provider_message = provider_message.replace(api_key, "[redacted]")
+        if isinstance(provider_message, str):
+            provider_message = " ".join(provider_message.split())[:300]
+        message = f"AI search failed (HTTP {error.code})."
+        if provider_message:
+            message = f"{message} Gemini says: {provider_message}"
+        else:
+            message = f"{message} Please check the Gemini API key and model access."
+        raise GeminiAPIError(message) from error
     except (URLError, TimeoutError) as error:
         raise GeminiAPIError("AI search could not connect. Check the server connection and try again.") from error
     except (json.JSONDecodeError, UnicodeDecodeError) as error:

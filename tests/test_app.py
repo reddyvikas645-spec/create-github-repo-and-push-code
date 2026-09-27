@@ -1,7 +1,9 @@
 import json
 import os
 import unittest
+from io import BytesIO
 from unittest.mock import patch
+from urllib.error import HTTPError
 
 from frontend.backend.app import GeminiAPIError, app
 
@@ -144,6 +146,28 @@ class TouristGuideTests(unittest.TestCase):
         request = urlopen.call_args.args[0]
         self.assertNotIn("test-key", request.full_url)
         self.assertEqual(request.get_header("X-goog-api-key"), "test-key")
+
+    @patch.dict(os.environ, {"GEMINI_API_KEY": "test-key"})
+    @patch("frontend.backend.app.urlopen")
+    def test_gemini_http_errors_include_safe_provider_details(self, urlopen):
+        urlopen.side_effect = HTTPError(
+            "https://example.test",
+            404,
+            "Not Found",
+            {},
+            BytesIO(json.dumps({
+                "error": {
+                    "message": "Model not found; attempted key test-key"
+                }
+            }).encode()),
+        )
+        from frontend.backend.app import _gemini_json
+
+        with self.assertRaisesRegex(GeminiAPIError, "Model not found") as raised:
+            _gemini_json("find places", {"type": "OBJECT"})
+
+        self.assertIn("[redacted]", str(raised.exception))
+        self.assertNotIn("test-key", str(raised.exception))
 
     @patch("frontend.backend.app._photo_for_place", return_value=None)
     def test_detail_pages_include_itinerary(self, _photo_lookup):
