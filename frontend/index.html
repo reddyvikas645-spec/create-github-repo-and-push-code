@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>India Tourist Guide</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        🇮🇳 India Tourist Guide
+    </div>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="#destinations">Destinations</a>
+        <a href="#about">About</a>
+    </nav>
+
+</header>
+
+
+<section class="hero">
+
+    <h1>Explore Incredible India 🇮🇳</h1>
+
+    <p>
+        Discover beautiful places, history, hotels and famous food.
+    </p>
+
+    <form action="/" method="GET">
+
+        <input
+            type="text"
+            name="search"
+            placeholder="Search destination..."
+            value="{{ search }}"
+        >
+
+        <button type="submit">
+            Search
+        </button>
+
+    </form>
+
+</section>
+
+
+<section class="container" id="destinations">
+
+    <h2>Popular Destinations</h2>
+
+    <div class="cards">
+
+        {% for place in places %}
+
+        <div class="card">
+
+            <div class="card-image">
+                🇮🇳
+            </div>
+
+            <div class="card-content">
+
+                <h3>{{ place["name"] }}</h3>
+
+                <p class="location">
+                    📍 {{ place["state"] }}
+                </p>
+
+                <p>
+                    {{ place["description"] }}
+                </p>
+
+                <a
+                    class="button"
+                    href="/place/{{ place['id'] }}"
+                >
+                    Explore
+                </a>
+
+            </div>
+
+        </div>
+
+        {% else %}
+
+        <p>No destination found.</p>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+
+<section class="features">
+
+    <h2>Why Use India Tourist Guide?</h2>
+
+    <div class="feature-container">
+
+        <div>
+            <span>🏛️</span>
+            <h3>History</h3>
+            <p>Learn about the history of famous Indian places.</p>
+        </div>
+
+        <div>
+            <span>🏨</span>
+            <h3>Hotels</h3>
+            <p>Find example hotel options near destinations.</p>
+        </div>
+
+        <div>
+            <span>🍛</span>
+            <h3>Local Food</h3>
+            <p>Discover famous foods from different regions.</p>
+        </div>
+
+        <div>
+            <span>📍</span>
+            <h3>Tourist Places</h3>
+            <p>Explore popular attractions and destinations.</p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="about" id="about">
+
+    <h2>About This Project</h2>
+
+    <p>
+        India Tourist Guide is a full-stack tourism website
+        developed using HTML, CSS, Python Flask and SQLite.
+        It helps tourists discover destinations and learn
+        about their history, attractions, hotels and food.
+    </p>
+
+</section>
+
+
+<footer>
+
+    <p>© 2026 India Tourist Guide</p>
+
+</footer>
+
+</body>
+</html>

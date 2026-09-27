@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>{{ place["name"] }} - India Tourist Guide</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        🇮🇳 India Tourist Guide
+    </div>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/">Destinations</a>
+    </nav>
+
+</header>
+
+
+<section class="details">
+
+    <div class="details-box">
+
+        <h1>{{ place["name"] }}</h1>
+
+        <p class="location">
+            📍 {{ place["state"] }}
+        </p>
+
+
+        <h2>About</h2>
+
+        <p>
+            {{ place["description"] }}
+        </p>
+
+
+        <h2>📖 History</h2>
+
+        <p>
+            {{ place["history"] }}
+        </p>
+
+
+        <h2>🏛️ Places to Visit</h2>
+
+        <p>
+            {{ place["attractions"] }}
+        </p>
+
+
+        <h2>🏨 Hotel Options</h2>
+
+        <p>
+            {{ place["hotel"] }}
+        </p>
+
+
+        <h2>🍛 Famous Food</h2>
+
+        <p>
+            {{ place["food"] }}
+        </p>
+
+
+        <a href="/" class="button">
+            ← Back to Destinations
+        </a>
+
+    </div>
+
+</section>
+
+
+<footer>
+
+    <p>© 2026 India Tourist Guide</p>
+
+</footer>
+
+</body>
+</html>
