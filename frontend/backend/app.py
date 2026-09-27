@@ -202,12 +202,12 @@ def _plain_text(value):
     return " ".join(" ".join(parser.parts).split())
 
 
-def _gemini_json(prompt, schema):
+def _gemini_json(prompt, schema, model="gemini-3.8-flash"):
     api_key = os.environ.get("GEMINI_API_KEY", "").strip()
     if not api_key:
         raise GeminiAPIError("AI search is not configured yet. Add GEMINI_API_KEY to the server environment.")
 
-    endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent"
+    endpoint = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
     body = {
         "contents": [{"parts": [{"text": prompt}]}],
         "generationConfig": {
@@ -228,6 +228,8 @@ def _gemini_json(prompt, schema):
     except HTTPError as error:
         if error.code == 429:
             raise GeminiAPIError("AI search is temporarily rate limited. Please try again shortly.") from error
+        if error.code == 503 and model == "gemini-3.8-flash":
+            return _gemini_json(prompt, schema, model="gemini-3.6-flash")
         try:
             error_body = json.loads(error.read().decode("utf-8"))
             provider_message = error_body.get("error", {}).get("message", "")

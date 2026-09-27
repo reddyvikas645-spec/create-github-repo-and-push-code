@@ -170,6 +170,40 @@ class TouristGuideTests(unittest.TestCase):
         self.assertIn("[redacted]", str(raised.exception))
         self.assertNotIn("test-key", str(raised.exception))
 
+    @patch.dict(os.environ, {"GEMINI_API_KEY": "test-key"})
+    @patch("frontend.backend.app.urlopen")
+    def test_gemini_503_falls_back_to_an_available_model(self, urlopen):
+        class Response:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_args):
+                return False
+
+            def read(self):
+                return json.dumps({
+                    "candidates": [{
+                        "content": {"parts": [{"text": '{"places": []}'}]}
+                    }]
+                }).encode()
+
+        urlopen.side_effect = [
+            HTTPError(
+                "https://example.test",
+                503,
+                "Unavailable",
+                {},
+                BytesIO(b'{"error":{"message":"High demand"}}'),
+            ),
+            Response(),
+        ]
+        from frontend.backend.app import _gemini_json
+
+        self.assertEqual(_gemini_json("find places", {"type": "OBJECT"}), {"places": []})
+        self.assertEqual(urlopen.call_count, 2)
+        self.assertIn("models/gemini-3.8-flash:generateContent", urlopen.call_args_list[0].args[0].full_url)
+        self.assertIn("models/gemini-3.6-flash:generateContent", urlopen.call_args_list[1].args[0].full_url)
+
     @patch("frontend.backend.app._photo_for_place", return_value=None)
     def test_detail_pages_include_itinerary(self, _photo_lookup):
         response = self.client.get("/place/1")
