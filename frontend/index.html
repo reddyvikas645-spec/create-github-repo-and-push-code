@@ -36,13 +36,15 @@
         Discover beautiful places, history, hotels and famous food.
     </p>
 
-    <form action="/" method="GET">
+    <form action="/" method="GET" role="search">
 
         <input
             type="text"
             name="search"
             placeholder="Search destination..."
             value="{{ search }}"
+            maxlength="160"
+            aria-label="Search destinations in India"
         >
 
         <button type="submit">
@@ -56,7 +58,19 @@
 
 <section class="container" id="destinations">
 
-    <h2>Popular Destinations</h2>
+    <h2>{% if search %}Results for “{{ search }}”{% else %}Popular Destinations{% endif %}</h2>
+
+    {% if search_error %}
+    <p class="notice" role="status">{{ search_error }}{% if places %} Showing matching destinations already in the guide.{% endif %}</p>
+    {% endif %}
+
+    {% if photo_error %}
+    <p class="notice" role="status">Some destination photos could not be loaded. Please try again later.</p>
+    {% endif %}
+
+    {% if search and places %}
+    <p class="result-count">{{ places|length }} destination{{ "s" if places|length != 1 else "" }} found</p>
+    {% endif %}
 
     <div class="cards">
 
@@ -64,9 +78,16 @@
 
         <div class="card">
 
-            <div class="card-image">
-                🇮🇳
-            </div>
+            {% if place.photo %}
+            <img
+                class="card-image"
+                src="{{ place.photo.url }}"
+                alt="{{ place.name }} in {{ place.state }}"
+                loading="lazy"
+            >
+            {% else %}
+            <div class="card-image card-image-placeholder" aria-label="Photo unavailable">🇮🇳</div>
+            {% endif %}
 
             <div class="card-content">
 
@@ -80,12 +101,20 @@
                     {{ place["description"] }}
                 </p>
 
-                <a
-                    class="button"
-                    href="/place/{{ place['id'] }}"
-                >
+                {% if place.get("id") %}
+                <a class="button" href="{{ url_for('place_detail', place_id=place.id) }}">
+                {% else %}
+                <a class="button" href="{{ url_for('generated_place_detail', name=place.name, state=place.state) }}">
+                {% endif %}
                     Explore
                 </a>
+
+                {% if place.photo %}
+                <p class="photo-credit">
+                    Photo: <a href="{{ place.photo.source_url }}" target="_blank" rel="noopener noreferrer">{{ place.photo.artist }}</a>
+                    · {{ place.photo.license }}
+                </p>
+                {% endif %}
 
             </div>
 
@@ -93,7 +122,13 @@
 
         {% else %}
 
-        <p>No destination found.</p>
+        <div class="empty-state">
+            {% if search %}
+            <p>No destinations matched “{{ search }}”. Try a city, state, monument, or region in India.</p>
+            {% else %}
+            <p>No destinations are available right now. Please try again later.</p>
+            {% endif %}
+        </div>
 
         {% endfor %}
 
@@ -109,9 +144,9 @@
     <div class="feature-container">
 
         <div>
-            <span>🏛️</span>
-            <h3>History</h3>
-            <p>Learn about the history of famous Indian places.</p>
+            <span>✨</span>
+            <h3>Discover Places</h3>
+            <p>Search for destinations across India and explore matching places.</p>
         </div>
 
         <div>
@@ -142,10 +177,10 @@
     <h2>About This Project</h2>
 
     <p>
-        India Tourist Guide is a full-stack tourism website
-        developed using HTML, CSS, Python Flask and SQLite.
-        It helps tourists discover destinations and learn
-        about their history, attractions, hotels and food.
+        India Tourist Guide uses Flask to help tourists discover
+        destinations, learn about their history, attractions, hotels
+        and food, and plan a visit. Gemini powers destination search
+        and travel guides; destination photos are credited to Wikimedia Commons.
     </p>
 
 </section>

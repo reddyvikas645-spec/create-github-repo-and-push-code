@@ -11,10 +11,13 @@ The goal of this project is to provide tourists with useful introductory informa
 ## Features
 
 - Search for destinations by name, state, or description
+- Find additional destinations with Gemini-powered search
 - Browse popular tourist destinations
+- View Wikimedia Commons photos with contributor and license credits
 - Read about each place's history and attractions
 - Explore example hotel options
 - Discover famous local food
+- Get a two-day itinerary, best travel season, and visitor tips
 - Responsive layout for mobile and desktop
 
 ## Technologies
@@ -56,10 +59,18 @@ The goal of this project is to provide tourists with useful introductory informa
 
 4. Open [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser.
 
+For AI destination search and generated destination guides, copy `.env.example`
+to `.env` and set `GEMINI_API_KEY` to your Google AI Studio API key. The key is
+read only by the Flask server; never put it in HTML or commit it. Without the
+key, curated destinations and their itineraries remain available, but searches
+outside that curated list will not be generated.
+
 ## Deploy to Vercel
 
 This repository includes a Vercel Python function entry point and routing
 configuration. Import the GitHub repository into Vercel and deploy it with the
 repository root as the project root. Vercel will install the dependencies from
 `requirements.txt`; pushes to the connected branch can then trigger new
-deployments automatically.
+deployments automatically. In the Vercel project's **Settings → Environment
+Variables**, add `GEMINI_API_KEY` with your rotated Google AI Studio key, then
+redeploy. Keep the key out of Git and client-side code.

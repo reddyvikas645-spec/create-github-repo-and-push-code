@@ -35,12 +35,29 @@
 
     <div class="details-box">
 
+        {% if place.photo %}
+        <img
+            class="details-image"
+            src="{{ place.photo.url }}"
+            alt="{{ place.name }} in {{ place.state }}"
+        >
+        <p class="photo-credit">
+            Photo: <a href="{{ place.photo.source_url }}" target="_blank" rel="noopener noreferrer">{{ place.photo.title }}</a>
+            by {{ place.photo.artist }} · {{ place.photo.license }}
+        </p>
+        {% else %}
+        <div class="details-image-placeholder" aria-label="Photo unavailable">🇮🇳</div>
+        {% endif %}
+
         <h1>{{ place["name"] }}</h1>
 
         <p class="location">
             📍 {{ place["state"] }}
         </p>
 
+        {% if ai_error %}
+        <p class="notice" role="status">{{ ai_error }}{% if not place.description %} Showing the destination name; detailed AI information is unavailable right now.{% endif %}</p>
+        {% endif %}
 
         <h2>About</h2>
 
@@ -58,23 +75,64 @@
 
         <h2>🏛️ Places to Visit</h2>
 
-        <p>
-            {{ place["attractions"] }}
-        </p>
-
+        <ul class="detail-list">
+            {% for attraction in place.attractions %}
+            <li>{{ attraction }}</li>
+            {% else %}
+            <li>Attraction details are not available.</li>
+            {% endfor %}
+        </ul>
 
         <h2>🏨 Hotel Options</h2>
-
-        <p>
-            {{ place["hotel"] }}
-        </p>
+        <ul class="detail-list">
+            {% for hotel in place.hotel %}
+            <li>{{ hotel }}</li>
+            {% else %}
+            <li>Accommodation details are not available.</li>
+            {% endfor %}
+        </ul>
 
 
         <h2>🍛 Famous Food</h2>
+        <ul class="detail-list">
+            {% for food in place.food %}
+            <li>{{ food }}</li>
+            {% else %}
+            <li>Local food details are not available.</li>
+            {% endfor %}
+        </ul>
 
-        <p>
-            {{ place["food"] }}
-        </p>
+        {% if place.best_time %}
+        <h2>🗓️ Best Time to Visit</h2>
+        <p>{{ place.best_time }}</p>
+        {% endif %}
+
+        {% if place.itinerary.day_1 or place.itinerary.day_2 %}
+        <h2>🧭 Two-Day Travel Plan</h2>
+        <div class="itinerary">
+            {% for day_key, day_title in [("day_1", "Day 1"), ("day_2", "Day 2")] %}
+            {% if place.itinerary[day_key] %}
+            <section class="itinerary-day">
+                <h3>{{ day_title }}</h3>
+                <ol>
+                    {% for stop in place.itinerary[day_key] %}
+                    <li><strong>{{ stop.time }}:</strong> {{ stop.activity }}</li>
+                    {% endfor %}
+                </ol>
+            </section>
+            {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if place.travel_tips %}
+        <h2>💡 Travel Tips</h2>
+        <ul class="detail-list">
+            {% for tip in place.travel_tips %}
+            <li>{{ tip }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
 
 
         <a href="/" class="button">
