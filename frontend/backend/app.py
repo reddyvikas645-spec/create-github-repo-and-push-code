@@ -207,7 +207,7 @@ def _gemini_json(prompt, schema):
     if not api_key:
         raise GeminiAPIError("AI search is not configured yet. Add GEMINI_API_KEY to the server environment.")
 
-    endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+    endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent"
     body = {
         "contents": [{"parts": [{"text": prompt}]}],
         "generationConfig": {

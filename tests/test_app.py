@@ -145,6 +145,7 @@ class TouristGuideTests(unittest.TestCase):
         self.assertEqual(_gemini_json("find places", {"type": "OBJECT"}), {"places": []})
         request = urlopen.call_args.args[0]
         self.assertNotIn("test-key", request.full_url)
+        self.assertIn("models/gemini-3.8-flash:generateContent", request.full_url)
         self.assertEqual(request.get_header("X-goog-api-key"), "test-key")
 
     @patch.dict(os.environ, {"GEMINI_API_KEY": "test-key"})
