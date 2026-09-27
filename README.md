@@ -45,7 +45,7 @@ The goal of this project is to provide tourists with useful introductory informa
 2. Install Flask:
 
    ```bash
-   python -m pip install Flask
+   python -m pip install -r requirements.txt
    ```
 
 3. From the project root, start the application:
@@ -55,3 +55,11 @@ The goal of this project is to provide tourists with useful introductory informa
    ```
 
 4. Open [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser.
+
+## Deploy to Vercel
+
+This repository includes a Vercel Python function entry point and routing
+configuration. Import the GitHub repository into Vercel and deploy it with the
+repository root as the project root. Vercel will install the dependencies from
+`requirements.txt`; pushes to the connected branch can then trigger new
+deployments automatically.
